@@ -81,7 +81,9 @@ def show_pokemon(request, pokemon_id):
     pokemon = {
         'title': requested_pokemon.title,
         'img_url': request.build_absolute_uri(requested_pokemon.photo.url),
-        'description': requested_pokemon.description
+        'description': requested_pokemon.description,
+        "title_en": requested_pokemon.title_en,
+        "title_jp": requested_pokemon.title_jp,
     }
     for pokemon_entity in PokemonEntity.objects.filter(pokemon__id=requested_pokemon.id, appeared_at__lt=now,
                                                            disappeared_at__gt=now):
