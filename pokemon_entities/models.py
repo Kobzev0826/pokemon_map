@@ -7,8 +7,14 @@ class Pokemon(models.Model):
     description = models.CharField('Описание покемона', max_length=2000, null=True, blank=True)
     title_en = models.CharField('Название на английском',  max_length=200, null=True, blank = True)
     title_jp = models.CharField('Название на японском', max_length=200, null=True, blank = True)
+    # next_evolution = models.ForeignKey(
+    #     "self", on_delete=models.SET_NULL, null=True,blank=True,
+    #     related_name='pokemon_evolution_next')
+    previous_evolution = models.ForeignKey(
+        "self", on_delete=models.CASCADE,null=True, blank=True,
+        related_name='pokemon_evolution_previous')
 
-    def __str__(self):
+    def __str__(self):  
         return self.title
 
 

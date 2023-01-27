@@ -60,15 +60,7 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    # with open('pokemon_entities/pokemons.json', encoding='utf-8') as database:
-    #     pokemons = json.load(database)['pokemons']
-    #
-    # for pokemon in pokemons:
-    #     if pokemon['pokemon_id'] == int(pokemon_id):
-    #         requested_pokemon = pokemon
-    #         break
-    # else:
-    #     return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+
     try:
         requested_pokemon = Pokemon.objects.get(id=pokemon_id)
     except (MultipleObjectsReturned, ObjectDoesNotExist):
@@ -78,12 +70,33 @@ def show_pokemon(request, pokemon_id):
     now = timezone.localtime()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
+    next_evo_id = Pokemon.objects.filter(previous_evolution = requested_pokemon.id).first()
+    if next_evo_id :
+        next_evolution = {
+            "title_ru": next_evo_id.title,
+            "pokemon_id": next_evo_id.id,
+            "img_url": next_evo_id.photo.url
+        }
+    else:
+        next_evolution = None
+
+    if requested_pokemon.previous_evolution :
+        previous_evolution = {
+            "title_ru": requested_pokemon.previous_evolution.title,
+            "pokemon_id": requested_pokemon.previous_evolution.id,
+            "img_url": requested_pokemon.previous_evolution.photo.url
+        }
+    else:
+        previous_evolution = None
+
     pokemon = {
         'title': requested_pokemon.title,
         'img_url': request.build_absolute_uri(requested_pokemon.photo.url),
         'description': requested_pokemon.description,
         "title_en": requested_pokemon.title_en,
         "title_jp": requested_pokemon.title_jp,
+        "next_evolution": next_evolution,
+        "previous_evolution": previous_evolution
     }
     for pokemon_entity in PokemonEntity.objects.filter(pokemon__id=requested_pokemon.id, appeared_at__lt=now,
                                                            disappeared_at__gt=now):
