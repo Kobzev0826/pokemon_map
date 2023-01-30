@@ -60,7 +60,7 @@ def show_pokemon(request, pokemon_id):
     now = timezone.localtime()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    next_evo_pokemon = requested_pokemon.pokemon_evolution_previous.first()
+    next_evo_pokemon = requested_pokemon.next_evolutions.first()
     next_evolution = None
     if next_evo_pokemon:
         next_evolution = {
