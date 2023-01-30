@@ -30,6 +30,15 @@ pip install -r requirements.txt
 python3 manage.py runserver
 ```
 
+### Как созавать покемонов 
+1. [создать superuser](https://developer.mozilla.org/ru/docs/Learn/Server-side/Django/Admin_site#%D0%A1%D0%BE%D0%B7%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5_%D1%81%D1%83%D0%BF%D0%B5%D1%80%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8F)
+```
+python manage.py createsuperuser
+```
+
+2. перейти в раздел `admin` для этого `<web адрес сайта>/admin`
+3. Можно создавать виды покемонов в разделе `Pokemons` и размещать из на карте создавая в разделе `Pokemon entitys`
+
 ### Переменные окружения
 
 Часть настроек проекта берётся из переменных окружения. Чтобы их определить, создайте файл `.env` рядом с `manage.py` и запишите туда данные в таком формате: `ПЕРЕМЕННАЯ=значение`.
@@ -38,6 +47,4 @@ python3 manage.py runserver
 - `DEBUG` — дебаг-режим. Поставьте True, чтобы увидеть отладочную информацию в случае ошибки.
 - `SECRET_KEY` — секретный ключ проекта
 
-## Цели проекта
 
-Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org).
