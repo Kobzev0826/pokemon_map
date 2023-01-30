@@ -1,7 +1,7 @@
 import folium
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from django.http import HttpResponseNotFound
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 from .models import Pokemon, PokemonEntity
@@ -56,24 +56,22 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    try:
-        requested_pokemon = Pokemon.objects.get(id=pokemon_id)
-    except (MultipleObjectsReturned, ObjectDoesNotExist):
-        return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+
+    requested_pokemon = get_object_or_404(Pokemon,id=pokemon_id)
 
     now = timezone.localtime()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    next_evo_id = requested_pokemon.pokemon_evolution_previous.first()
-    if next_evo_id:
+    next_evo_pokemon = requested_pokemon.pokemon_evolution_previous.first()
+    next_evolution = None
+    if next_evo_pokemon:
         next_evolution = {
-            "title_ru": next_evo_id.title,
-            "pokemon_id": next_evo_id.id,
-            "img_url": next_evo_id.photo.url if next_evo_id.photo else DEFAULT_IMAGE_URL
+            "title_ru": next_evo_pokemon.title,
+            "pokemon_id": next_evo_pokemon.id,
+            "img_url": next_evo_pokemon.photo.url if next_evo_pokemon.photo else DEFAULT_IMAGE_URL
         }
-    else:
-        next_evolution = None
 
+    previous_evolution = None
     if requested_pokemon.previous_evolution:
         previous_evolution = {
             "title_ru": requested_pokemon.previous_evolution.title,
@@ -81,8 +79,8 @@ def show_pokemon(request, pokemon_id):
             "img_url": requested_pokemon.previous_evolution.photo.url
             if requested_pokemon.previous_evolution.photo else DEFAULT_IMAGE_URL
         }
-    else:
-        previous_evolution = None
+
+
 
     image = requested_pokemon.photo.url if requested_pokemon.photo else DEFAULT_IMAGE_URL
     pokemon = {
