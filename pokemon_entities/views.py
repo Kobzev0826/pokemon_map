@@ -1,6 +1,4 @@
 import folium
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
-from django.http import HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
@@ -32,8 +30,9 @@ def show_all_pokemons(request):
     now = timezone.localtime()
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in pokemons:
-        for pokemon_entity in PokemonEntity.objects.filter(pokemon__id=pokemon.id, appeared_at__lt=now,
-                                                           disappeared_at__gt=now):
+        active_pokemon_entities = PokemonEntity.objects.filter(pokemon__id=pokemon.id, appeared_at__lt=now,
+                                                               disappeared_at__gt=now)
+        for pokemon_entity in active_pokemon_entities:
             image = pokemon_entity.pokemon.photo.url if pokemon_entity.pokemon.photo else DEFAULT_IMAGE_URL
             add_pokemon(
                 folium_map, pokemon_entity.latitude,
@@ -56,8 +55,7 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-
-    requested_pokemon = get_object_or_404(Pokemon,id=pokemon_id)
+    requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
 
     now = timezone.localtime()
 
@@ -80,8 +78,6 @@ def show_pokemon(request, pokemon_id):
             if requested_pokemon.previous_evolution.photo else DEFAULT_IMAGE_URL
         }
 
-
-
     image = requested_pokemon.photo.url if requested_pokemon.photo else DEFAULT_IMAGE_URL
     pokemon = {
         'title': requested_pokemon.title,
@@ -92,8 +88,9 @@ def show_pokemon(request, pokemon_id):
         "next_evolution": next_evolution,
         "previous_evolution": previous_evolution
     }
-    for pokemon_entity in PokemonEntity.objects.filter(pokemon__id=requested_pokemon.id, appeared_at__lt=now,
-                                                       disappeared_at__gt=now):
+    active_pokemon_entities = PokemonEntity.objects.filter(pokemon__id=requested_pokemon.id, appeared_at__lt=now,
+                                                           disappeared_at__gt=now)
+    for pokemon_entity in active_pokemon_entities:
         add_pokemon(
             folium_map, pokemon_entity.latitude,
             pokemon_entity.longitude,
